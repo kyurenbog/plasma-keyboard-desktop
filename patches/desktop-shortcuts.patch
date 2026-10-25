@@ -1,0 +1,209 @@
+--- a/src/inputlisteneritem.cpp
++++ b/src/inputlisteneritem.cpp
+@@ -1,3 +1,5 @@
++#include <QVirtualKeyboardInputContext>
++#include <QTimer>
+ /*
+     SPDX-FileCopyrightText: 2024 Aleix Pol i Gonzalez <aleixpol@kde.org>
+     SPDX-FileCopyrightText: 2025 Devin Lin <devin@kde.org>
+@@ -189,7 +191,6 @@
+ 
+ void InputListenerItem::setEngine(QVirtualKeyboardInputEngine * /*engine*/)
+ {
+-    // TODO: hook into engine events if necessary?
+ }
+ 
+ QVariant InputListenerItem::inputMethodQuery(Qt::InputMethodQuery query) const
+@@ -330,8 +331,176 @@
+     return {};
+ }
+ 
++
++#include "qwayland-fake-input.h"
++#include <QWaylandClientExtensionTemplate>
++#include <QTimer>
++#include <QHash>
++#include <linux/input-event-codes.h>
++
++class DesktopFakeInput : public QWaylandClientExtensionTemplate<DesktopFakeInput>, public QtWayland::org_kde_kwin_fake_input {
++public:
++    DesktopFakeInput() : QWaylandClientExtensionTemplate<DesktopFakeInput>(4) {
++        initialize();
++        if (isActive()) authenticate(QStringLiteral("Plasma Keyboard"), QStringLiteral("Desktop keyboard shortcuts"));
++    }
++};
++
++static int desktopScanCode(int key) {
++    static const QHash<int,int> codes = {
++        {Qt::Key_Tab, KEY_TAB},
++        {Qt::Key_Backspace, KEY_BACKSPACE},
++        {Qt::Key_Return, KEY_ENTER},
++        {Qt::Key_Enter, KEY_ENTER},
++        {Qt::Key_Escape, KEY_ESC},
++        {Qt::Key_Space, KEY_SPACE},
++        {Qt::Key_Left, KEY_LEFT},
++        {Qt::Key_Right, KEY_RIGHT},
++        {Qt::Key_Up, KEY_UP},
++        {Qt::Key_Down, KEY_DOWN},
++        {Qt::Key_Insert, KEY_INSERT},
++        {Qt::Key_Delete, KEY_DELETE},
++        {Qt::Key_Home, KEY_HOME},
++        {Qt::Key_End, KEY_END},
++        {Qt::Key_PageUp, KEY_PAGEUP},
++        {Qt::Key_PageDown, KEY_PAGEDOWN},
++        {Qt::Key_Minus, KEY_MINUS},
++        {Qt::Key_Equal, KEY_EQUAL},
++        {Qt::Key_Backslash, KEY_BACKSLASH},
++        {Qt::Key_Slash, KEY_SLASH},
++        {Qt::Key_Comma, KEY_COMMA},
++        {Qt::Key_Period, KEY_DOT},
++        {Qt::Key_Semicolon, KEY_SEMICOLON},
++        {Qt::Key_Apostrophe, KEY_APOSTROPHE},
++        {Qt::Key_BracketLeft, KEY_LEFTBRACE},
++        {Qt::Key_BracketRight, KEY_RIGHTBRACE},
++        {Qt::Key_QuoteLeft, KEY_GRAVE},
++        {Qt::Key_A, KEY_A},
++        {Qt::Key_B, KEY_B},
++        {Qt::Key_C, KEY_C},
++        {Qt::Key_D, KEY_D},
++        {Qt::Key_E, KEY_E},
++        {Qt::Key_F, KEY_F},
++        {Qt::Key_G, KEY_G},
++        {Qt::Key_H, KEY_H},
++        {Qt::Key_I, KEY_I},
++        {Qt::Key_J, KEY_J},
++        {Qt::Key_K, KEY_K},
++        {Qt::Key_L, KEY_L},
++        {Qt::Key_M, KEY_M},
++        {Qt::Key_N, KEY_N},
++        {Qt::Key_O, KEY_O},
++        {Qt::Key_P, KEY_P},
++        {Qt::Key_Q, KEY_Q},
++        {Qt::Key_R, KEY_R},
++        {Qt::Key_S, KEY_S},
++        {Qt::Key_T, KEY_T},
++        {Qt::Key_U, KEY_U},
++        {Qt::Key_V, KEY_V},
++        {Qt::Key_W, KEY_W},
++        {Qt::Key_X, KEY_X},
++        {Qt::Key_Y, KEY_Y},
++        {Qt::Key_Z, KEY_Z},
++        {Qt::Key_0, KEY_0},
++        {Qt::Key_1, KEY_1},
++        {Qt::Key_2, KEY_2},
++        {Qt::Key_3, KEY_3},
++        {Qt::Key_4, KEY_4},
++        {Qt::Key_5, KEY_5},
++        {Qt::Key_6, KEY_6},
++        {Qt::Key_7, KEY_7},
++        {Qt::Key_8, KEY_8},
++        {Qt::Key_9, KEY_9},
++        {Qt::Key_F1, KEY_F1},
++        {Qt::Key_F2, KEY_F2},
++        {Qt::Key_F3, KEY_F3},
++        {Qt::Key_F4, KEY_F4},
++        {Qt::Key_F5, KEY_F5},
++        {Qt::Key_F6, KEY_F6},
++        {Qt::Key_F7, KEY_F7},
++        {Qt::Key_F8, KEY_F8},
++        {Qt::Key_F9, KEY_F9},
++        {Qt::Key_F10, KEY_F10},
++        {Qt::Key_F11, KEY_F11},
++        {Qt::Key_F12, KEY_F12},
++        {0x0419, KEY_Q},
++        {0x0426, KEY_W},
++        {0x0423, KEY_E},
++        {0x041a, KEY_R},
++        {0x0415, KEY_T},
++        {0x041d, KEY_Y},
++        {0x0413, KEY_U},
++        {0x0428, KEY_I},
++        {0x0429, KEY_O},
++        {0x0417, KEY_P},
++        {0x0425, KEY_LEFTBRACE},
++        {0x042a, KEY_RIGHTBRACE},
++        {0x0424, KEY_A},
++        {0x042b, KEY_S},
++        {0x0412, KEY_D},
++        {0x0410, KEY_F},
++        {0x041f, KEY_G},
++        {0x0420, KEY_H},
++        {0x041e, KEY_J},
++        {0x041b, KEY_K},
++        {0x0414, KEY_L},
++        {0x0416, KEY_SEMICOLON},
++        {0x042d, KEY_APOSTROPHE},
++        {0x042f, KEY_Z},
++        {0x0427, KEY_X},
++        {0x0421, KEY_C},
++        {0x041c, KEY_V},
++        {0x0418, KEY_B},
++        {0x0422, KEY_N},
++        {0x042c, KEY_M},
++        {0x0411, KEY_COMMA},
++        {0x042e, KEY_DOT},
++        {0x0401, KEY_GRAVE},
++    };
++    return codes.value(key, -1);
++}
++
++static QList<QPair<int, Qt::KeyboardModifiers>> desktopQueue;
++static DesktopFakeInput *desktopFake = nullptr;
++
++static void desktopSendNext() {
++    if (desktopQueue.isEmpty()) return;
++    auto [code, mods] = desktopQueue.front();
++    QList<int> modifiers;
++    if (mods.testFlag(Qt::ControlModifier)) modifiers << KEY_LEFTCTRL;
++    if (mods.testFlag(Qt::AltModifier)) modifiers << KEY_LEFTALT;
++    if (mods.testFlag(Qt::MetaModifier)) modifiers << KEY_LEFTMETA;
++    if (mods.testFlag(Qt::ShiftModifier)) modifiers << KEY_LEFTSHIFT;
++    for (int modifier : modifiers) desktopFake->keyboard_key(modifier, 1);
++    desktopFake->keyboard_key(code, 1);
++    desktopFake->keyboard_key(code, 0);
++    QTimer::singleShot(20, desktopFake, [modifiers] {
++        for (auto it = modifiers.crbegin(); it != modifiers.crend(); ++it) desktopFake->keyboard_key(*it, 0);
++        desktopQueue.removeFirst();
++        if (!desktopQueue.isEmpty()) QTimer::singleShot(5, desktopFake, desktopSendNext);
++    });
++}
++
++static bool desktopKey(QKeyEvent *event, bool pressed) {
++    const auto mods = event->modifiers();
++    const bool shortcut = mods.testFlag(Qt::ControlModifier) || mods.testFlag(Qt::AltModifier) || mods.testFlag(Qt::MetaModifier);
++    const bool special = event->text().isEmpty() || event->key() >= Qt::Key_Escape;
++    if (!shortcut && !special) return false;
++    int code = desktopScanCode(event->key());
++    if (code < 0) return false;
++    if (!desktopFake) desktopFake = new DesktopFakeInput();
++    if (!desktopFake->isActive()) return false;
++    if (pressed) {
++        desktopQueue.append({code, mods});
++        if (desktopQueue.size() == 1) desktopSendNext();
++    }
++    event->accept();
++    return true;
++}
++
+ void InputListenerItem::keyPressEvent(QKeyEvent *event)
+ {
++    if (desktopKey(event, true)) return;
+     if (IGNORED_KEYS->find(event->key()) != IGNORED_KEYS->end()) {
+         return;
+     }
+@@ -347,6 +516,7 @@
+ 
+ void InputListenerItem::keyReleaseEvent(QKeyEvent *event)
+ {
++    if (desktopKey(event, false)) return;
+     if (IGNORED_KEYS->find(event->key()) != IGNORED_KEYS->end()) {
+         return;
+     }
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -130,3 +130,5 @@
+     FILES ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.plasma.keyboard.metainfo.xml
+     DESTINATION ${KDE_INSTALL_METAINFODIR}
+ )
++
++ecm_add_qtwayland_client_protocol(plasma-keyboard PROTOCOL ${CMAKE_CURRENT_SOURCE_DIR}/fake-input.xml BASENAME fake-input)

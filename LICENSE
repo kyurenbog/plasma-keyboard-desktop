@@ -1,0 +1,9 @@
+The project-specific layout generator, installation scripts, and modifications
+are distributed under the GNU General Public License version 3 only
+(SPDX-License-Identifier: GPL-3.0-only).
+
+The full license text is available in LICENSES/GPL-3.0-only.txt.
+
+Upstream source files retain their own copyright and licensing notices.
+The bundled fake-input protocol is LGPL-2.1-or-later; see NOTICE.md and
+LICENSES/LGPL-2.1-only.txt for the license text.

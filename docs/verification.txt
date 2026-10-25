@@ -1,0 +1,13 @@
+PROBE key=16777249 modifiers=67108864
+PROBE key=65 modifiers=67108864
+PROBE key=16777249 modifiers=67108864
+PROBE key=67 modifiers=67108864
+PROBE key=16777249 modifiers=67108864
+PROBE key=16777234 modifiers=67108864
+PROBE key=16777248 modifiers=33554432
+PROBE key=16777234 modifiers=33554432
+PROBE key=16777268 modifiers=0
+PROBE key=16777251 modifiers=134217728
+PROBE key=88 modifiers=134217728
+
+PASS: expected modifiers and reset verified.

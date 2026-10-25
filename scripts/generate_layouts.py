@@ -17,6 +17,7 @@ for locale, letters in [('fallback', ['qwertyuiop', 'asdfghjkl', 'zxcvbnm']), ('
 import QtQuick
 import QtQuick.VirtualKeyboard
 import QtQuick.VirtualKeyboard.Components
+import QtQuick.Controls as QQC2
 import org.kde.plasma.keyboard.lib as PlasmaKeyboard
 import org.kde.kirigami as Kirigami
 
@@ -48,15 +49,21 @@ KeyboardLayout {
                 : control && control.pressed
                     ? PlasmaKeyboard.BreezeConstants.normalKeyPressedBackgroundColor
                     : PlasmaKeyboard.BreezeConstants.normalKeyBackgroundColor
-            Text {
-                anchors.centerIn: parent
-                text: modifierPanel.control ? modifierPanel.control.displayText : ""
-                color: modifierPanel.control && modifierPanel.control.highlighted
-                    ? Kirigami.Theme.highlightedTextColor
-                    : PlasmaKeyboard.BreezeConstants.keyTextColor
-                font.family: PlasmaKeyboard.BreezeConstants.fontFamily
-                font.pixelSize: Math.max(12, Math.min(22, modifierPanel.height * 0.3))
-                font.bold: modifierPanel.control && modifierPanel.control.highlighted
+            Item {
+                QQC2.Label {
+                    anchors.centerIn: parent
+                    text: modifierPanel.control ? modifierPanel.control.displayText : ""
+                    color: modifierPanel.control && modifierPanel.control.highlighted
+                        ? Kirigami.Theme.highlightedTextColor
+                        : PlasmaKeyboard.BreezeConstants.keyTextColor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font {
+                        family: PlasmaKeyboard.BreezeConstants.fontFamily
+                        weight: Font.Light
+                        pixelSize: 60 * PlasmaKeyboard.BreezeConstants.scaleHint
+                    }
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ def key(label, code, weight=100):
 for locale, letters in [('fallback', ['qwertyuiop', 'asdfghjkl', 'zxcvbnm']), ('ru_RU', ['йцукенгшщзхъ', 'фывапролджэ', 'ячсмитьбю'])]:
     qml = '''// Extended desktop layout; stock system files remain untouched.
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.VirtualKeyboard
 import QtQuick.VirtualKeyboard.Components
 import QtQuick.Controls as QQC2
@@ -88,9 +89,7 @@ KeyboardLayout {
         if i==2:
             if locale=='fallback': qml += key(',','Qt.Key_Comma')+key('.','Qt.Key_Period')+key('/','Qt.Key_Slash')
             else: qml += key('.','Qt.Key_Period')
-            # Scale the 1750-unit bottom row to this 1500-unit letter row.
-            # Down starts at 1450; the letter block ends at 1225 here.
-            qml += '        FillerKey { weight: 125 / 7 }\n'+key('↑','Qt.Key_Up','600 / 7')+'        FillerKey { weight: 1200 / 7 }\n'
+            qml += '        Item {\n            id: arrowSlot\n            property real keyWeight: 100\n            property bool smallTextVisible: false\n            Layout.preferredWidth: 275\n            Layout.fillWidth: true\n            Layout.fillHeight: true\n            PcKey {\n                id: upArrow\n                text: "↑"\n                key: Qt.Key_Up\n                // Both rows use desktopLayout coordinates; track the real Down geometry.\n                x: downArrow.x + downArrow.parent.x - arrowSlot.x - arrowSlot.parent.x\n                width: downArrow.width\n                height: arrowSlot.height\n            }\n        }\n'
         qml += '    }\n'
     qml += '''    KeyboardRow {
         ModifierKey { text: "Ctrl"; modifierFlag: Qt.ControlModifier }
@@ -101,7 +100,7 @@ KeyboardLayout {
         PcKey { text: "Space"; eventText: " "; key: Qt.Key_Space; weight: 350 }
 '''
     for label,code in [('Home','Home'),('End','End'),('PgUp','PageUp'),('PgDn','PageDown'),('Del','Delete'),('←','Left'),('↓','Down'),('→','Right')]:
-        qml += key(label,'Qt.Key_'+code)
+        qml += key(label,'Qt.Key_'+code).replace('PcKey {', 'PcKey { id: downArrow;', 1) if code == 'Down' else key(label,'Qt.Key_'+code)
     qml += '        HideKeyboardKey { }\n    }\n}\n'
     (root/locale/'main.qml').write_text(qml, encoding='utf-8')
 print('Generated:',root)

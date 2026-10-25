@@ -54,6 +54,10 @@ Tap several modifiers before the target key for a combination such as Ctrl+Alt+k
 
 Meta corresponds to the Windows/Super key. The actual action depends on the application's or Plasma's shortcuts. The system keyboard layout also affects physical key events; this package does not reconfigure your system language settings.
 
+## Add your language
+
+See [Creating a language layout](docs/custom-layouts.md) for a step-by-step example, key codes, row alignment, language selection, and preserving your changes during updates. [Русская версия](docs/custom-layouts.ru.md).
+
 ## Update
 
 ```bash

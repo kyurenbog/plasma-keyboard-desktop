@@ -17,6 +17,8 @@ for locale, letters in [('fallback', ['qwertyuiop', 'asdfghjkl', 'zxcvbnm']), ('
 import QtQuick
 import QtQuick.VirtualKeyboard
 import QtQuick.VirtualKeyboard.Components
+import org.kde.plasma.keyboard.lib as PlasmaKeyboard
+import org.kde.kirigami as Kirigami
 
 KeyboardLayout {
     id: desktopLayout
@@ -39,6 +41,24 @@ KeyboardLayout {
         functionKey: true
         highlighted: (desktopLayout.latchedModifiers & modifierFlag) !== 0
         onClicked: desktopLayout.latchedModifiers ^= modifierFlag
+        keyPanelDelegate: PlasmaKeyboard.BreezeKeyPanel {
+            id: modifierPanel
+            color: control && control.highlighted
+                ? Kirigami.Theme.highlightColor
+                : control && control.pressed
+                    ? PlasmaKeyboard.BreezeConstants.normalKeyPressedBackgroundColor
+                    : PlasmaKeyboard.BreezeConstants.normalKeyBackgroundColor
+            Text {
+                anchors.centerIn: parent
+                text: modifierPanel.control ? modifierPanel.control.displayText : ""
+                color: modifierPanel.control && modifierPanel.control.highlighted
+                    ? Kirigami.Theme.highlightedTextColor
+                    : PlasmaKeyboard.BreezeConstants.keyTextColor
+                font.family: PlasmaKeyboard.BreezeConstants.fontFamily
+                font.pixelSize: Math.max(12, Math.min(22, modifierPanel.height * 0.3))
+                font.bold: modifierPanel.control && modifierPanel.control.highlighted
+            }
+        }
     }
     KeyboardRow {
 '''

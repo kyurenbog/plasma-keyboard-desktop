@@ -88,7 +88,9 @@ KeyboardLayout {
         if i==2:
             if locale=='fallback': qml += key(',','Qt.Key_Comma')+key('.','Qt.Key_Period')+key('/','Qt.Key_Slash')
             else: qml += key('.','Qt.Key_Period')
-            qml += '        FillerKey { weight: 175 }\n'+key('↑','Qt.Key_Up')
+            # Scale the 1750-unit bottom row to this 1500-unit letter row.
+            # Down starts at 1450; the letter block ends at 1225 here.
+            qml += '        FillerKey { weight: 125 / 7 }\n'+key('↑','Qt.Key_Up','600 / 7')+'        FillerKey { weight: 1200 / 7 }\n'
         qml += '    }\n'
     qml += '''    KeyboardRow {
         ModifierKey { text: "Ctrl"; modifierFlag: Qt.ControlModifier }

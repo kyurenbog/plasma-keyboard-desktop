@@ -117,6 +117,22 @@ bash scripts/activate.sh
 
 These commands assume the earlier variables are still set; define them again in a new terminal. For permanent changes to the distributed English/Russian layouts, edit `scripts/generate_layouts.py`: installation replaces generated files. Adding another locale to the generator's list also requires adapting its punctuation and row-width conditions, which currently assume English and Russian.
 
+## Example: Ukrainian
+
+Select **Plasma Keyboard Extended** under **Keyboard → Virtual Keyboard**. Enable languages under the separate **Keyboard → On-Screen Keyboard** page. Selecting Ukrainian there enables the existing `uk_UA` layout; it does not convert it into an extended one.
+
+For Ukrainian, the extended `ru_RU/main.qml` is a useful starting point instead of English `fallback/main.qml`. First back up the `uk_UA` directory as described in step 2. Put the adapted main layer at:
+
+```text
+~/.local/share/plasma/keyboard/layouts/uk_UA/main.qml
+```
+
+Use `XDG_DATA_HOME` instead of `~/.local/share` when configured. Preserve Ukrainian symbol layers and input methods where needed. Replace Russian letters with Ukrainian ones and check **і, ї, є, ґ** and their uppercase forms. Rebalance row widths if adding keys. Keep the special keys and modifier handlers.
+
+Restart the keyboard, enable Ukrainian under **On-Screen Keyboard**, click **Apply**, and select it with the language button. The new Ukrainian `main.qml` controls its appearance and special keys, just as for English and Russian. Test shortcuts separately: use appropriate supported physical-position codes or extend the C++ table as described in step 6. Replacing labels alone does not guarantee all shortcuts with new letters.
+
+This is an adaptation guide; the package does not yet include a completed extended Ukrainian layout. Save it separately before reinstalling, as described in step 7.
+
 ## Further information
 
 The [Qt Virtual Keyboard overview](https://doc.qt.io/qt-6/qtvirtualkeyboard-overview.html) describes language layer files and input methods. This project's `PcKey` and C++ patch additionally determine its behavior.

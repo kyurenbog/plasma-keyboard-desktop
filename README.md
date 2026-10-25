@@ -42,6 +42,21 @@ Tap a text field to show the keyboard. You can also select **Plasma Keyboard Ext
 
 The installer copies the system language layouts, then replaces the English fallback and Russian main layouts. Existing user layouts, desktop entry and custom executable are backed up. The script prints the backup path.
 
+## Where to enable the keyboard and select languages
+
+These are two separate KDE settings pages:
+
+1. **System Settings → Keyboard → Virtual Keyboard**: select **Plasma Keyboard Extended**, not the ordinary Plasma Keyboard. Click **Apply** if enabled. The **Show Virtual Keyboard** setting at the top controls when it opens; the demonstrated tablet configuration uses **With Touch and Tablet**. Then touch a text field.
+2. **System Settings → Keyboard → On-Screen Keyboard**: check the required languages, such as **American English** and **русский**, and click **Apply**. Use **Filter languages…** to find a language. Switch between the enabled languages with the on-screen keyboard's language button.
+
+Names may vary between KDE translations. **Virtual Keyboard** selects the program; **On-Screen Keyboard** selects its languages and preferences. The system hardware keyboard layout is configured separately.
+
+### Why Ukrainian looks different
+
+The extended layouts currently cover English and Russian. Ukrainian (`uk_UA`) has its own stock `main.qml`, which the installer does not replace. Selecting Ukrainian therefore loads its ordinary layout: enabling a language does not automatically add function keys, Ctrl/Alt or staggered rows.
+
+Creating an extended `uk_UA/main.qml` as explained in the [custom-layout guide](docs/custom-layouts.md#example-ukrainian) gives Ukrainian the same style and key set. Complete support also requires checking Ukrainian letters, Shift and shortcuts: new codes for І, Ї, Є and Ґ are not automatically added to the C++ table. Other languages with their own stock `main.qml` need the same adaptation; languages using the shared fallback may already inherit its extended appearance.
+
 ## Use shortcuts
 
 Modifiers are **one-shot toggles**, not keys you need to hold:

@@ -18,7 +18,7 @@
 
 ## Совместимость
 
-Проверено на **Fedora 44 KDE, aarch64, Plasma Keyboard 6.7.5, Qt Virtual Keyboard 6.11.2**.
+Проверено на **Fedora 44 KDE, aarch64, Plasma Keyboard 6.7.5, Qt Virtual Keyboard 6.11.2** и **Kupfer Linux (=Arch Linux) KDE Plasma-Mobile, aarch64, Plasma Keyboard 6.8.2, Qt Virtual Keyboard 6.12.0**.
 
 Нужны сеанс Plasma **Wayland** и установленный системный пакет `plasma-keyboard`. Сборка требует Qt ≥ 6.10, KDE Frameworks ≥ 6.26 и Plasma ≥ 6.7. Программа собирается на самом устройстве; готового бинарника только для ARM в репозитории нет. Другие архитектуры и дистрибутивы не проверялись. Патч предназначен именно для **v6.7.5**.
 

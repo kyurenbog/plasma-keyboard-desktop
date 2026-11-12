@@ -4,6 +4,7 @@
 - The layouts use Qt Virtual Keyboard's public QML components and follow the layouts shipped by KDE/Qt. Original Qt layouts credit The Qt Company Ltd. and are available under LicenseRef-Qt-Commercial OR GPL-3.0-only. This package uses the GPL-3.0-only option.
 - `protocols/fake-input.xml` comes from KDE plasma-wayland-protocols. Copyright 2015 Martin Gräßlin, LGPL-2.1-or-later. Its original notice is preserved in the file. The supplied LGPL 2.1 text applies with the upstream "or later" option intact.
 - The fake-input approach follows KDE Plasma Keyboard upstream's `KWinFakeInput` implementation by Devin Lin. The supplied patch adapts the mechanism to the v6.7.5 event handler and includes a serialized shortcut queue.
+- Arch dependency package selection and the Kupfer Linux/Plasma Mobile device test were contributed by **comradeFreeman** in [pull request #1](https://github.com/kyurenbog/plasma-keyboard-desktop/pull/1). Subsequent installer changes add derivative detection, explicit unsupported-system handling and dry-run checks.
 
 Upstream projects:
 

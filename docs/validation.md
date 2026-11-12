@@ -12,3 +12,9 @@ Validated on 2026-10-25 using Fedora 44 KDE aarch64, Plasma Keyboard 6.7.5 and Q
 - Runtime modifier delivery and reset were checked with a separate Qt application; see [verification.txt](verification.txt).
 
 The installation checks used temporary directories and did not replace the active tablet keyboard. Other architectures and distributions were not tested.
+
+## Dependency installer update — 2026-11-12
+
+`tests/install-deps.sh` passed under GNU Bash 5.3.15 (Git runtime on Windows): 19 distribution fixtures plus missing-file and invalid-argument checks. The cases cover Fedora, Nobara, Arch, Arch ARM, Manjaro, EndeavourOS, an Arch-like Kupfer fixture, generic derivatives, explicit-ID precedence and rejection of Ubuntu, unknown systems and unsupported enterprise distributions.
+
+The tests use `--dry-run` and a blocking sudo stub; they execute no package manager. This verifies command selection, not live package installation or a fresh build on Arch. Real-device Arch-family usage was reported separately by comradeFreeman in [PR #1](https://github.com/kyurenbog/plasma-keyboard-desktop/pull/1).

@@ -2,9 +2,9 @@
 
 [Русская инструкция](README.ru.md) · English
 
-Extended on-screen keyboard for **Fedora KDE Plasma on Wayland**. Adds desktop keys and shortcuts to Plasma Keyboard 6.7.5 while keeping English/Russian language switching.
+Extended on-screen keyboard for **KDE Plasma on Wayland**, with dependency installers for Fedora and Arch-based distributions. Adds desktop keys and shortcuts to Plasma Keyboard 6.7.5 while keeping English/Russian language switching.
 
-This is a community patch and layout package, not an official KDE release. It builds an additional executable in your home directory; the Fedora package remains installed.
+This is a community patch and layout package, not an official KDE release. It builds an additional executable in your home directory; your distribution's system package remains installed.
 
 ## Features
 
@@ -18,16 +18,31 @@ This is a community patch and layout package, not an official KDE release. It bu
 
 ## Compatibility
 
-Tested on **Fedora 44 KDE, aarch64, Plasma Keyboard 6.7.5, Qt Virtual Keyboard 6.11.2** and **Kupfer Linux (=Arch Linux) KDE Plasma-Mobile, aarch64, Plasma Keyboard 6.8.2, Qt Virtual Keyboard 6.12.0**..
+Tested on **Fedora 44 KDE, aarch64, Plasma Keyboard 6.7.5, Qt Virtual Keyboard 6.11.2**. Contributor **comradeFreeman** also [reported successful use](https://github.com/kyurenbog/plasma-keyboard-desktop/pull/1) on a **Nothing Phone (1), Kupfer Linux (Arch-based), KDE Plasma Mobile, aarch64**, with system Plasma Keyboard **6.8.2** and Qt Virtual Keyboard **6.12.0**. That additional device was tested by the contributor, not independently reproduced here.
 
-Requires a Plasma **Wayland** session and the system `plasma-keyboard` package. The build uses Qt ≥ 6.10, KDE Frameworks ≥ 6.26 and Plasma ≥ 6.7. It compiles natively, so there is no ARM-only binary in this repository. Other architectures/distributions have not been tested. The patch targets **v6.7.5**, not arbitrary newer versions.
+Requires a Plasma **Wayland** session and the system `plasma-keyboard` package. The build uses Qt ≥ 6.10, KDE Frameworks ≥ 6.26 and Plasma ≥ 6.7. It compiles natively, so there is no ARM-only binary in this repository. Other architectures/distributions have not been tested. The patch and downloaded sources still target **v6.7.5**; a newer system package does not change the custom executable's source version.
+
+The dependency installer recognizes Fedora/Nobara and Arch/Arch ARM/Manjaro/EndeavourOS by `ID`, and derivatives by `ID_LIKE` in `os-release`. Recognition alone does not guarantee that a distribution supplies the required versions. Unknown systems and RHEL/CentOS/Rocky/AlmaLinux/Amazon Linux stop with an explanation instead of guessing a package manager. Ubuntu/Debian are not supported by this installer.
 
 ## Install
 
-Open Konsole in your regular desktop session. Only dependency installation uses sudo.
+Open Konsole in your regular desktop session. Only dependency installation uses sudo. Install Git using **one** command appropriate for your system:
+
+**Fedora:**
 
 ```bash
 sudo dnf install -y git
+```
+
+**Arch and Arch-based distributions:**
+
+```bash
+sudo pacman -Syu --needed git
+```
+
+Then use the same commands on either supported package family:
+
+```bash
 git clone https://github.com/kyurenbog/plasma-keyboard-desktop.git
 cd plasma-keyboard-desktop
 bash scripts/install-deps.sh
@@ -37,6 +52,14 @@ bash scripts/activate.sh
 ```
 
 `build.sh` downloads KDE's v6.7.5 source, applies the included patch and compiles it locally. Internet access and development packages are required. By default it uses three build jobs; use `JOBS=2 bash scripts/build.sh` if memory is limited. This build disables keyboard sounds and vibration.
+
+`install-deps.sh` selects DNF or pacman automatically. On Arch it runs a full system upgrade together with dependency installation (`pacman -Syu --needed`) and keeps pacman's confirmation prompt. Review the transaction before accepting. Arch does not support partial upgrades; see [ArchWiki](https://wiki.archlinux.org/title/System_maintenance#Partial_upgrades_are_unsupported).
+
+To inspect detection and the package command without changing anything:
+
+```bash
+bash scripts/install-deps.sh --dry-run
+```
 
 Tap a text field to show the keyboard. You can also select **Plasma Keyboard Extended** under **System Settings → Keyboard → Virtual Keyboard**. If it does not appear immediately, reopen System Settings or sign out and back in.
 
@@ -130,6 +153,14 @@ journalctl --user --since "5 minutes ago" --no-pager | grep plasma-keyboard
 ```
 
 ## Implementation and verification
+
+Installer detection checks can be run without installing packages:
+
+```bash
+bash tests/install-deps.sh
+```
+
+The fixtures cover direct IDs, derived distributions, `ID_LIKE` ordering, unsupported enterprise distributions and invalid arguments. They do not establish real package availability or replace on-device build testing.
 
 In Plasma Keyboard 6.7.5, textual key events are committed as text and the keysym path uses zero modifiers. The patch forwards shortcuts and supported special keys through **KWin fake-input**, using Linux keycodes. A queue releases modifiers before the next shortcut is sent. Ordinary text continues through the input method.
 

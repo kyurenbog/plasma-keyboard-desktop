@@ -18,7 +18,7 @@ This is a community patch and layout package, not an official KDE release. It bu
 
 ## Compatibility
 
-Tested on **Fedora 44 KDE, aarch64, Plasma Keyboard 6.7.5, Qt Virtual Keyboard 6.11.2**.
+Tested on **Fedora 44 KDE, aarch64, Plasma Keyboard 6.7.5, Qt Virtual Keyboard 6.11.2** and **Kupfer Linux (=Arch Linux) KDE Plasma-Mobile, aarch64, Plasma Keyboard 6.8.2, Qt Virtual Keyboard 6.12.0**..
 
 Requires a Plasma **Wayland** session and the system `plasma-keyboard` package. The build uses Qt ≥ 6.10, KDE Frameworks ≥ 6.26 and Plasma ≥ 6.7. It compiles natively, so there is no ARM-only binary in this repository. Other architectures/distributions have not been tested. The patch targets **v6.7.5**, not arbitrary newer versions.
 
